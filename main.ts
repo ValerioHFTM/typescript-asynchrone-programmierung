@@ -184,7 +184,7 @@ export const getLukeSkywalkerInfoAsync: AsyncBasedFunction = async () => {
   );
 
   /* When all data is fetched we get this into a response, where we provide the person details, w get the homweorld name 
-  and we map the movies to get the title, director and release date. 
+  and we map the movies to get the title, director and release date.
   */
   return {
     name: person.name,

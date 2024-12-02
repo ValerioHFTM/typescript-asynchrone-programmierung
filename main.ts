@@ -145,7 +145,7 @@ export const getLukeSkywalkerInfo: PromiseBasedFunction = () => {
                 "https://swapi.dev/api/vehicles/6/",
                 "https://swapi.dev/api/vehicles/7/",
             */
-           
+
             // Combine all data into the final object
             return {
               name: person.name,
@@ -167,10 +167,36 @@ export const getLukeSkywalkerInfo: PromiseBasedFunction = () => {
 // Task 2: write a function using async and await
 // see also: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-1-7.html
 type AsyncBasedFunction = () => Promise<PersonInfo>;
-export const getLukeSkywalkerInfoAsync: PromiseBasedFunction = async () => {
+export const getLukeSkywalkerInfoAsync: AsyncBasedFunction = async () => {
+  //Here we are getting the informaiton about the person -> In our case it's Luke
   const response = await fetch("https://swapi.dev/api/people/1");
-  // TODO: load other stuff and return LukeSkywalkerInfo
-  return (await {}) as PersonInfo;
+  const person: Person = await response.json();
+  // Afterwwards we are fetching the information of Luke (person) for his homeworld (person.homeworld)
+  const homeworldResponse = await fetch(person.homeworld);
+  const homeworld = await homeworldResponse.json();
+
+  // Now we contniue with the films and we map them to get the full result from the API
+  const films = await Promise.all(
+    person.films.map(async (filmUrl) => {
+      const filmResponse = await fetch(filmUrl);
+      return filmResponse.json();
+    })
+  );
+
+  /* When all data is fetched we get this into a response, where we provide the person details, w get the homweorld name 
+  and we map the movies to get the title, director and release date. 
+  */
+  return {
+    name: person.name,
+    height: person.height,
+    gender: person.gender,
+    homeworld: homeworld.name,
+    films: films.map((film) => ({
+      title: film.title,
+      director: film.director,
+      release_date: film.release_date,
+    })),
+  } as PersonInfo;
 };
 
 // Task 3: write a function using Observable based api

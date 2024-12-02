@@ -16,7 +16,10 @@ Um die Tests auszuführen im Terminal `npm test` ausführen
 3. Proceed with tasks and updating the readme to explain how we solved the homework.
 4. Valerio provided the reply to task 1
 5. Mateusz provided the reply to task 2
-6. **Place holder for task 3**
+6. Valerio provided the reply to task 3
+
+
+All tasks were done in cooperation
 
 
 ---

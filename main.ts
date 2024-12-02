@@ -2,6 +2,8 @@ import fetch, { Response } from "node-fetch";
 import { map, mergeMap } from "rxjs/operators";
 import { get } from "./utils";
 import { of } from "rxjs";
+import { forkJoin } from "rxjs";
+
 
 /* 
 Read data from https://swapi.dev/api/people/1 (Luke Skywalker)
@@ -199,13 +201,33 @@ export const getLukeSkywalkerInfoAsync: AsyncBasedFunction = async () => {
   } as PersonInfo;
 };
 
+
+
 // Task 3: write a function using Observable based api
 // see also: https://rxjs.dev/api/index/function/forkJoin
 export const getLukeSkywalkerInfoObservable = () => {
+  // pipe is used to combine multiple functions into one
   return get<Person>("https://swapi.dev/api/people/1").pipe(
     mergeMap((person: Person) => {
-      // TODO: load other stuff and return LukeSkywalkerInfo
-      return of({} as PersonInfo);
+      // Best Practice on Observables is to use a $ as a suffix at the end of the variablename
+      const homeworld$ = get<{ name: string }>(person.homeworld);
+      const films$ = forkJoin(
+        person.films.map((filmUrl) => get<Film>(filmUrl))
+      );
+
+      return forkJoin([homeworld$, films$]).pipe(
+        map(([homeworld, films]) => ({
+          name: person.name,
+          height: person.height,
+          gender: person.gender,
+          homeworld: homeworld.name,
+          films: films.map((film) => ({
+            title: film.title,
+            director: film.director,
+            release_date: film.release_date,
+          })),
+        }))
+      );
     })
   );
 };
